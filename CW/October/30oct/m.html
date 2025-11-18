@@ -1,0 +1,18 @@
+<h1 id="greet">Good Morning</h1>
+
+<script>
+let heading = document.getElementById('greet');
+
+setInterval(() => {
+  if (heading.textContent === "Good Morning") {
+    heading.textContent = "Good Afternoon";
+    heading.style.color = "orange";
+  } else if (heading.textContent === "Good Afternoon") {
+    heading.textContent = "Good Evening";
+    heading.style.color = "blue";
+  } else {
+    heading.textContent = "Good Morning";
+    heading.style.color = "green";
+  }
+},1000); 
+</script>

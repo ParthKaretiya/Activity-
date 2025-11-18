@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Attendance Tracker & Predictor</title>
+<link rel="icon" href="data:," />
+<style>
+  :root{
+    --bg1:#0f172a; --bg2:#0b1220; --card:#0f172a;
+    --accent:#6ee7b7; --accent2:#60a5fa; --danger:#fb7185;
+    --glass: rgba(255,255,255,0.04);
+    --glass-2: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#e6eef8;}
+  .app{max-width:980px;margin:28px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px;}
+  .panel{background:linear-gradient(180deg,var(--glass),var(--glass-2));padding:18px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6);backdrop-filter:blur(6px);}
+  header.site{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;}
+  header.site h1{font-size:20px;margin:0;display:flex;align-items:center;gap:10px;}
+  .brand-dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 18px rgba(96,165,250,0.18)}
+  .profile-actions{display:flex;gap:8px;align-items:center;}
+  .btn{background:white;color:#061224;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.4)}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--accent)}
+  .small{padding:6px 8px;font-size:13px}
+  /* left column */
+  .left{display:flex;flex-direction:column;gap:14px;}
+  .profile-card{display:flex;gap:12px;align-items:center}
+  .avatar{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:#041127}
+  .profile-meta{flex:1;}
+  .meta-line{font-size:13px;color:rgba(230,238,248,0.85);opacity:0.95}
+  .meta-sub{font-size:12px;color:rgba(230,238,248,0.65)}
+  .progress-wrap{margin-top:12px}
+  .progress{height:12px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 800ms cubic-bezier(.2,.9,.2,1)}
+  .status-bubble{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.25);font-weight:700}
+  .controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  /* main right column */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .card{padding:16px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+  .card h3{margin:0 0 10px 0;font-size:15px}
+  label{display:block;font-size:13px;margin-bottom:6px;color:rgba(255,255,255,0.85)}
+  input[type=number]{width:100%;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:inherit}
+  .row{display:flex;gap:8px}
+  .muted{font-size:13px;color:rgba(255,255,255,0.6)}
+  .result-big{font-size:20px;font-weight:800}
+  .hint{font-size:13px;color:rgba(255,255,255,0.6);margin-top:8px}
+  /* calendar */
+  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day{aspect-ratio:1/1;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,0.6);cursor:pointer}
+  .day.present{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#041127}
+  .chart-wrap{height:120px}
+  canvas{width:100%;height:100%}
+  .footer-note{font-size:12px;color:rgba(255,255,255,0.55);margin-top:8px}
+  /* responsive */
+  @media (max-width:900px){.app{grid-template-columns:1fr;padding:12px}.grid{grid-template-columns:1fr}.left{order:2}}
+  /* tiny UI flourishes */
+  .glow{box-shadow:0 8px 40px rgba(96,165,250,0.08)}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700}
+  .danger{background:linear-gradient(90deg,#fb7185,#f97316);color:#041127}
+  .warn{background:linear-gradient(90deg,#fbbf24,#fb7185);color:#041127}
+  .safe{background:linear-gradient(90deg,#6ee7b7,#34d399);color:#041127}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="site">
+      <h1><span class="brand-dot"></span> Attendance Tracker • Predictor</h1>
+      <div class="profile-actions">
+        <select id="profileSelect" class="small" title="Switch profile"></select>
+        <button id="btnNew" class="btn small ghost">New</button>
+        <button id="btnDelete" class="btn small ghost">Delete</button>
+        <button id="btnExport" class="btn small">Export</button>
+      </div>
+    </header>
+
+    <!-- LEFT: profile & dashboard -->
+    <aside class="panel left">
+      <div class="profile-card card">
+        <div class="avatar" id="avatar">AA</div>
+        <div class="profile-meta">
+          <div id="pname" class="meta-line">No Profile</div>
+          <div id="pmisc" class="meta-sub">Set mandatory % on create</div>
+          <div class="progress-wrap">
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <span class="muted">Current</span><span id="pcurrPerc" class="muted">0%</span>
+            </div>
+            <div class="progress" aria-hidden><div id="pfill" class="progress-fill"></div></div>
+          </div>
+          <div class="controls">
+            <span id="pstatus" class="status-bubble pill">—</span>
+            <button id="btnQuickAdd" class="btn small ghost">+ Quick Add</button>
+            <button id="btnRemind" class="btn small">Remind</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Profile / Mandatory %</h3>
+        <div style="display:flex;gap:8px">
+          <input id="username" placeholder="Your name" />
+          <input id="mandPct" type="number" placeholder="e.g., 75" min="1" max="100" style="width:95px"/>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="createProfile" class="btn">Create / Update</button>
+          <button id="login" class="btn ghost">Login</button>
+        </div>
+        <div class="hint">Profiles stored locally (localStorage). You can export or delete.</div>
+      </div>
+
+      <div class="card">
+        <h3>Personal Dashboard</h3>
+        <div id="motivation" class="result-big">Welcome 👋</div>
+        <div class="hint" id="deadlineHint">No deadlines set</div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btnCalc" class="btn small ghost">Calculate Now</button>
+          <button id="btnSim" class="btn small ghost">Open Bunk Simulator</button>
+          <button id="btnRecovery" class="btn small ghost">Recovery Plan</button>
+        </div>
+        <div class="footer-note">Use Quick Add to add today's attendance in calendar</div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: main functional area -->
+    <main class="panel">
+      <div class="grid">
+        <!-- Calculate Attendance -->
+        <section class="card">
+          <h3>Calculate Attendance</h3>
+          <label>Attended classes</label>
+          <input type="number" id="attendedIn" min="0" />
+          <label>Total classes</label>
+          <input type="number" id="totalIn" min="1" />
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="calcBtn" class="btn">Calculate</button>
+            <button id="saveBtn" class="btn ghost">Save record</button>
+          </div>
+          <div id="calcResult" class="hint" style="margin-top:12px"></div>
+        </section>
+
+        <!-- Bunk Simulator -->
+        <section class="card">
+          <h3>Bunk Simulator</h3>
+          <label>Planned bunk days (X)</label>
+          <input type="number" id="bunkDays" min="0" value="0"/>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="bunkSimBtn" class="btn">Simulate</button>
+            <button id="maxBunkBtn" class="btn ghost">Max bunks allowed</button>
+          </div>
+          <div id="bunkResult" class="hint" style="margin-top:10px"></div>
+        </section>
+
+        <!-- Recovery -->
+        <section class="card">
+          <h3>Attendance Recovery</h3>
+          <label>Enter current attended & total</label>
+          <div class="row">
+            <input id="recAtt" type="number" placeholder="attended" min="0" />
+            <input id="recTot" type="number" placeholder="total" min="1" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="recovBtn" class="btn">How many days to attend?</button>
+            <button id="recovPlan" class="btn ghost">Show plan</button>
+          </div>
+          <div id="recovResult" class="hint" style="margin-top:10px"></div>
+        </section>
+
+        <!-- Monthly calendar / chart -->
+        <section class="card" style="grid-column:1/-1">
+          <h3>Monthly Attendance View</h3>
+          <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+            <select id="monthSelect"></select>
+            <select id="yearSelect"></select>
+            <button id="addToday" class="btn small">Add Today</button>
+            <button id="clearMonth" class="btn small ghost">Clear Month</button>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <div style="flex:1">
+              <div class="calendar" id="calendar"></div>
+              <div class="hint" style="margin-top:8px">Click a day to toggle Present / Absent</div>
+            </div>
+            <div style="width:260px">
+              <div class="chart-wrap card glow">
+                <canvas id="monthChart"></canvas>
+              </div>
+              <div class="hint" id="monthStats" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+  </div>
+
+<script>
+/*
+  Attendance Tracker single-file app
+  - Stores profiles in localStorage.att_profiles
+  - Each profile: {name, mandPct, history: { 'YYYY-MM': { day: true/false } }, lastSaved {attended,total} }
+*/
+
+// ---------- Utilities ----------
+const $ = sel => document.querySelector(sel);
+const formatPct = v => (Math.round(v*100)/100).toFixed(2) + '%';
+
+// localStorage helpers
+function loadProfiles(){
+  try { return JSON.parse(localStorage.getItem('att_profiles')||'{}'); } catch(e){ return {}; }
+}
+function saveProfiles(profiles){ localStorage.setItem('att_profiles', JSON.stringify(profiles)); }
+
+// default global
+let profiles = loadProfiles();
+let current = null;
+
+// ---------- UI references ----------
+const profileSelect = $('#profileSelect');
+const btnNew = $('#btnNew'), btnDelete = $('#btnDelete'), btnExport = $('#btnExport');
+const createProfile = $('#createProfile'), loginBtn = $('#login');
+const usernameInput = $('#username'), mandPctInput = $('#mandPct');
+const pname = $('#pname'), pmisc = $('#pmisc'), avatar = $('#avatar'), pfill = $('#pfill'), pcurrPerc = $('#pcurrPerc'), pstatus = $('#pstatus'), pmot = $('#motivation'), deadlineHint = $('#deadlineHint');
+const calcBtn = $('#calcBtn'), attendedIn = $('#attendedIn'), totalIn = $('#totalIn'), calcResult = $('#calcResult'), saveBtn = $('#saveBtn');
+const bunkDays = $('#bunkDays'), bunkSimBtn = $('#bunkSimBtn'), bunkResult = $('#bunkResult'), maxBunkBtn = $('#maxBunkBtn');
+const recAtt = $('#recAtt'), recTot = $('#recTot'), recovBtn = $('#recovBtn'), recovResult = $('#recovResult'), recovPlan = $('#recovPlan');
+const monthSelect = $('#monthSelect'), yearSelect = $('#yearSelect'), calendar = $('#calendar'), monthChart = $('#monthChart'), monthStats = $('#monthStats');
+const addToday = $('#addToday'), clearMonth = $('#clearMonth');
+const btnQuickAdd = $('#btnQuickAdd'), btnRemind = $('#btnRemind'), btnCalc = $('#btnCalc'), btnSim = $('#btnSim'), btnRecovery = $('#btnRecovery');
+
+// ---------- Profiles management ----------
+function refreshProfileSelect(){
+  profileSelect.innerHTML = '';
+  const keys = Object.keys(profiles);
+  if(keys.length===0){ profileSelect.appendChild(new Option('— no profile —','')); return; }
+  keys.forEach(k=> profileSelect.appendChild(new Option(k,k)));
+  profileSelect.value = current ? current.name : keys[0];
+}
+function createOrUpdateProfile(){
+  const name = usernameInput.value.trim();
+  let mand = Number(mandPctInput.value);
+  if(!name) return alert('Enter name');
+  if(!mand || mand<=0 || mand>=100) { mand = 75; /* default */}
+  const key = name;
+  profiles[key] = profiles[key] || { name:key, mandPct:mand, history:{}, lastSaved:{attended:0,total:0} };
+  profiles[key].mandPct = mand;
+  saveProfiles(profiles);
+  current = profiles[key];
+  afterProfileLoad();
+  refreshProfileSelect();
+  alert('Profile saved locally.');
+}
+function loginProfile(){
+  const name = usernameInput.value.trim();
+  if(!name || !profiles[name]) return alert('Profile not found. Create it first.');
+  current = profiles[name];
+  afterProfileLoad();
+  refreshProfileSelect();
+}
+function deleteProfile(){
+  if(!current) return alert('No profile selected.');
+  if(!confirm('Delete profile ' + current.name + ' ?')) return;
+  delete profiles[current.name];
+  saveProfiles(profiles);
+  current = null;
+  refreshProfileSelect();
+  updateUI();
+}
+function exportProfile(){
+  if(!current) return alert('Select a profile');
+  const data = JSON.stringify(current, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = current.name + '_attendance.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ---------- On profile loaded ----------
+function afterProfileLoad(){
+  if(!current) return;
+  usernameInput.value = current.name;
+  mandPctInput.value = current.mandPct;
+  pname.textContent = current.name;
+  pmisc.textContent = `Mandatory: ${current.mandPct}%`;
+  avatar.textContent = (current.name.split(' ').map(s=>s[0]).slice(0,2).join('')||'AA').toUpperCase();
+  if(!current.lastSaved) current.lastSaved = {attended:0,total:0};
+  updateDashboard();
+  loadMonthCalendar(); drawChart();
+}
+
+// ---------- Dashboard updates ----------
+function updateDashboard(){
+  if(!current) { pname.textContent='No Profile'; pmisc.textContent='Set mandatory % on create'; pfill.style.width='0%'; pcurrPerc.textContent='0%'; pstatus.textContent='—'; pmot.textContent='Welcome 👋'; return;}
+  const ls = current.lastSaved || {attended:0,total:0};
+  const a = Number(ls.attended)||0, t = Number(ls.total)||0;
+  const pct = t>0? (a/t*100):0;
+  pfill.style.width = Math.min(100, pct) + '%';
+  pcurrPerc.textContent = pct.toFixed(2) + '%';
+  if(pct >= current.mandPct) { pstatus.textContent='Safe'; pstatus.className='status-bubble pill safe'; pmot.textContent = 'Great — Keep it up! 🎉'; deadlineHint.textContent='No immediate risk.'; }
+  else if(pct >= current.mandPct - 10) { pstatus.textContent='Warning'; pstatus.className='status-bubble pill warn'; pmot.textContent='Caution — attend more'; deadlineHint.textContent='Consider attending next classes consecutively.'; }
+  else { pstatus.textContent='Danger'; pstatus.className='status-bubble pill danger'; pmot.textContent='Risk — urgent action needed! 🔥'; deadlineHint.textContent='You may face detention. Follow recovery plan.'; }
+}
+
+// ---------- Calculate logic ----------
+function calculateAttendance(a,t){
+  // careful arithmetic: a and t integers
+  if(isNaN(a)||isNaN(t) || t<=0 || a<0 || a>t) return null;
+  const pct = (a/t)*100;
+  return Number(pct.toFixed(4)); // keep precision
+}
+calcBtn.addEventListener('click', ()=>{
+  const a = Number(attendedIn.value), t = Number(totalIn.value);
+  const r = calculateAttendance(a,t);
+  if(r===null) { calcResult.textContent = 'Invalid input'; return; }
+  let status = '', cls='';
+  if(!current) status = 'No profile selected';
+  else if(r >= current.mandPct) { status = 'Safe'; cls='safe'; }
+  else if(r >= current.mandPct - 10) { status = 'Warning'; cls='warn'; }
+  else { status = 'Danger'; cls='danger'; }
+  calcResult.innerHTML = `Attendance: <strong>${r.toFixed(2)}%</strong> — <span class="${cls} pill">${status}</span>`;
+});
+
+// Save record (lastSaved)
+saveBtn.addEventListener('click', ()=>{
+  if(!current) return alert('Select profile to save');
+  const a = Number(attendedIn.value), t = Number(totalIn.value);
+  if(isNaN(a)||isNaN(t) || t<=0 || a<0 || a>t) return alert('Invalid values');
+  current.lastSaved = {attended: a, total: t};
+  profiles[current.name] = current; saveProfiles(profiles); updateDashboard();
+  alert('Saved to profile as last snapshot.');
+});
+
+// ---------- Bunk simulator ----------
+function bunkSimulation(a,t,x, mand){
+  // a: attended, t: total, x: bunks to add
+  // new percent = a / (t + x)
+  if(t+x <=0) return null;
+  const newPct = (a/(t+x))*100;
+  // max bunks allowed: largest integer X s.t. a/(t+X) >= mand/100
+  // Solve for X: a/(t+X) >= R => t+X <= a/R => X <= a/R - t
+  const R = mand/100;
+  let maxX = Math.floor((a/R) - t);
+  if(maxX < 0) maxX = 0;
+  return {newPct:Number(newPct.toFixed(4)), maxBunks: maxX};
+}
+bunkSimBtn.addEventListener('click', ()=>{
+  if(!current) return alert('Select profile');
+  const a = Number(attendedIn.value)||Number(current.lastSaved?.attended||0);
+  const t = Number(totalIn.value)||Number(current.lastSaved?.total||0);
+  const x = Number(bunkDays.value)||0;
+  if(a<0||t<=0||a>t) return bunkResult.textContent='Set valid attended/total';
+  const r = bunkSimulation(a,t,x,current.mandPct);
+  bunkResult.innerHTML = `If you bunk <b>${x}</b> classes → New attendance: <b>${r.newPct.toFixed(2)}%</b><br>Max bunks allowed (to stay ≥ ${current.mandPct}%): <b>${r.maxBunks}</b>`;
+});
+maxBunkBtn.addEventListener('click', ()=>{
+  if(!current) return alert('Select profile');
+  const a = Number(attendedIn.value)||Number(current.lastSaved?.attended||0);
+  const t = Number(totalIn.value)||Number(current.lastSaved?.total||0);
+  if(a<0||t<=0||a>t) return bunkResult.textContent='Set valid attended/total';
+  const r = bunkSimulation(a,t,0,current.mandPct);
+  bunkResult.innerHTML = `Max bunks allowed to keep ≥ ${current.mandPct}%: <b>${r.maxBunks}</b>`;
+});
+
+// ---------- Recovery calculation ----------
+function daysToReach(a,t,mand){
+  // find minimal n >=0 s.t. (a + n)/(t + n) >= mand/100
+  // Rearranged: (a+n) >= R*(t+n) => a+n >= R*t + R*n => n - R*n >= R*t - a
+  // n*(1-R) >= R*t - a => n >= (R*t - a) / (1-R)
+  const R = mand/100;
+  if(1 - R <= 0) return Infinity;
+  const num = (R * t) - a;
+  if(num <= 0) return 0;
+  const val = Math.ceil(num / (1 - R));
+  return val;
+}
+recovBtn.addEventListener('click', ()=>{
+  if(!current) return alert('Select profile');
+  const a = Number(recAtt.value), t = Number(recTot.value);
+  if(isNaN(a)||isNaN(t)||t<=0||a<0||a>t) return recovResult.textContent='Invalid input';
+  const need = daysToReach(a,t,current.mandPct);
+  if(need === 0) recovResult.innerHTML = `You already at/above ${current.mandPct}% 🎉`;
+  else recovResult.innerHTML = `Attend <b>${need}</b> consecutive classes to reach ≥ ${current.mandPct}%`;
+});
+recovPlan.addEventListener('click', ()=>{
+  // show a simple plan in days
+  if(!current) return alert('Select profile');
+  const a = Number(recAtt.value), t = Number(recTot.value);
+  if(isNaN(a)||isNaN(t)||t<=0||a<0||a>t) return recovResult.textContent='Invalid input';
+  const need = daysToReach(a,t,current.mandPct);
+  if(need === 0) { recovResult.textContent='No plan needed'; return; }
+  let s = 'Plan:\n';
+  for(let i=1;i<=Math.min(7,need);i++){
+    s += `${i}. Attend day ${i} → Est %: ${ ((a+i)/(t+i)*100).toFixed(2) }%\n`;
+  }
+  if(need>7) s += `... and continue for ${need} days total.`;
+  alert(s);
+});
+
+// ---------- Monthly calendar & chart ----------
+function ymdKey(y,m){ return `${y}-${String(m).padStart(2,'0')}`; }
+function getMonthDays(y,m){ return new Date(y,m,0).getDate(); }
+function ensureMonthEntry(profile, year, month){
+  const key = ymdKey(year, month);
+  profile.history = profile.history || {};
+  profile.history[key] = profile.history[key] || {}; // day -> boolean
+  return profile.history[key];
+}
+function loadMonthCalendar(year, month){
+  if(!current) { calendar.innerHTML='Select profile'; return; }
+  year = year || Number(yearSelect.value); month = month || Number(monthSelect.value);
+  const days = getMonthDays(year, month);
+  calendar.innerHTML = '';
+  const mon = ensureMonthEntry(current, year, month);
+  for(let d=1; d<=days; d++){
+    const el = document.createElement('div');
+    el.className='day' + (mon[d] ? ' present' : '');
+    el.textContent = d;
+    el.dataset.day = d;
+    el.addEventListener('click', ()=> {
+      mon[d] = !mon[d];
+      profiles[current.name] = current; saveProfiles(profiles);
+      el.classList.toggle('present');
+      updateMonthStats(year,month);
+      updateLastSavedFromHistory(); // optional: update lastSaved based on month counts
+      updateDashboard();
+      drawChart();
+    });
+    calendar.appendChild(el);
+  }
+  updateMonthStats(year,month);
+}
+function updateMonthStats(year,month){
+  const key = ymdKey(year, month);
+  const mon = current.history && current.history[key] ? current.history[key] : {};
+  const days = getMonthDays(year, month);
+  let present = 0;
+  for(let d=1; d<=days; d++) if(mon[d]) present++;
+  const pct = days>0 ? (present/days*100) : 0;
+  monthStats.textContent = `Present: ${present} / ${days}  •  ${pct.toFixed(2)}%`;
+}
+function drawChart(){
+  const ctx = monthChart.getContext('2d');
+  const year = Number(yearSelect.value), month = Number(monthSelect.value);
+  const key = ymdKey(year,month);
+  const days = getMonthDays(year,month);
+  const mon = current.history && current.history[key] ? current.history[key] : {};
+  // draw simple bar chart: daily presence 1 or 0
+  monthChart.width = 600; monthChart.height = 240;
+  ctx.clearRect(0,0,monthChart.width, monthChart.height);
+  const w = monthChart.width, h = monthChart.height, pad = 20;
+  const colW = (w - pad*2) / days;
+  for(let d=1; d<=days; d++){
+    const val = mon[d] ? 1 : 0;
+    const barH = (h - pad*2) * val;
+    ctx.fillStyle = mon[d] ? 'rgba(110,231,183,0.95)' : 'rgba(255,255,255,0.06)';
+    ctx.fillRect(pad + (d-1)*colW + 4, h - pad - barH, colW - 8, barH);
+  }
+  // axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '12px Inter, Arial';
+  ctx.fillText('Daily presence (1 = present)', pad, 14);
+}
+
+// Add today + clear
+addToday.addEventListener('click', () => {
+  if(!current) return alert('Select profile');
+  const d = new Date(); const year = d.getFullYear(), month = d.getMonth()+1, day = d.getDate();
+  ensureMonthEntry(current, year, month)[day] = true;
+  profiles[current.name] = current; saveProfiles(profiles);
+  loadMonthCalendar(year, month);
+  drawChart();
+  updateLastSavedFromHistory();
+  updateDashboard();
+});
+clearMonth.addEventListener('click', () => {
+  if(!current) return alert('Select profile');
+  const year = Number(yearSelect.value), month = Number(monthSelect.value);
+  if(!confirm('Clear data for '+year+'-'+String(month).padStart(2,'0')+' ?')) return;
+  ensureMonthEntry(current,year,month);
+  current.history[ymdKey(year,month)] = {};
+  profiles[current.name] = current; saveProfiles(profiles);
+  loadMonthCalendar(year,month); drawChart(); updateLastSavedFromHistory(); updateDashboard();
+});
+
+// update lastSaved by counting history up to today (simple heuristic)
+function updateLastSavedFromHistory(){
+  if(!current) return;
+  let total=0, present=0;
+  for(const key in current.history){
+    const parts = key.split('-'); const year=Number(parts[0]), month=Number(parts[1]);
+    const mon=current.history[key];
+    for(const d in mon){ total++; if(mon[d]) present++; }
+  }
+  if(total>0) current.lastSaved = {attended:present, total:total};
+  profiles[current.name]=current; saveProfiles(profiles);
+}
+
+// ---------- Reminders & Notifications ----------
+let remindInterval = null;
+function startReminders(){
+  if(!current) return alert('Select profile');
+  if('Notification' in window && Notification.permission !== "granted"){
+    Notification.requestPermission().then(p => { if(p === "granted") startReminders(); else alert('Enable notifications to use reminders.'); });
+    return;
+  }
+  if(remindInterval){ clearInterval(remindInterval); remindInterval=null; btnRemind.textContent='Remind'; return; }
+  btnRemind.textContent='Stop Reminder';
+  remindInterval = setInterval(()=> {
+    // check risk
+    const ls = current.lastSaved || {attended:0,total:0};
+    const pct = ls.total>0 ? (ls.attended/ls.total*100) : 0;
+    if(pct < current.mandPct){
+      const msg = `⚠ Attendance ${pct.toFixed(2)}% — below ${current.mandPct}%`;
+      if('Notification' in window && Notification.permission === "granted"){
+        new Notification('Attendance Alert', {body: msg});
+      } else {
+        console.log('Reminder:', msg);
+      }
+      // also show in page
+      pmot.textContent = 'Reminder: Attend next classes to recover.';
+    }
+  }, 60*1000); // check every minute (for demo). In real app: longer
+  alert('Reminders started (page must remain open). You can stop with Remind button.');
+}
+
+// ---------- Quick add: add today's present/absent toggle (default present) ----------
+btnQuickAdd.addEventListener('click', () => addToday.click());
+btnRemind.addEventListener('click', startReminders);
+
+// ---------- Profile selection handlers ----------
+profileSelect.addEventListener('change', ()=> {
+  const v = profileSelect.value;
+  if(!v) { current=null; updateUI(); return; }
+  current = profiles[v];
+  afterProfileLoad();
+});
+btnNew.addEventListener('click', ()=> {
+  usernameInput.value = ''; mandPctInput.value = 75; usernameInput.focus();
+});
+btnDelete.addEventListener('click', deleteProfile);
+btnExport.addEventListener('click', exportProfile);
+createProfile.addEventListener('click', createOrUpdateProfile);
+loginBtn.addEventListener('click', loginProfile);
+btnCalc.addEventListener('click', ()=> { window.scrollTo({top:0, behavior:'smooth'}); attendedIn.focus(); });
+btnSim.addEventListener('click', ()=> { bunkDays.focus(); });
+btnRecovery.addEventListener('click', ()=> { recAtt.focus(); });
+
+// ---------- bootstrap months/years ----------
+(function init(){
+  // populate month/year selects
+  const now = new Date(); const curYear = now.getFullYear(), curMonth = now.getMonth()+1;
+  for(let y=curYear-2; y<=curYear+2; y++){ const opt = new Option(y,y); yearSelect.appendChild(opt); }
+  for(let m=1;m<=12;m++){ const opt=new Option(m,m); monthSelect.appendChild(opt); }
+  yearSelect.value = curYear; monthSelect.value = curMonth;
+  // load profiles
+  refreshProfileSelect();
+  if(Object.keys(profiles).length>0) {
+    const first = Object.keys(profiles)[0]; current = profiles[first]; afterProfileLoad();
+  } else { updateUI(); }
+  loadMonthCalendar(curYear,curMonth); drawChart();
+})();
+
+// update UI helper
+function updateUI(){ afterProfileLoad(); refreshProfileSelect(); drawChart(); }
+
+// export/save on page unload
+window.addEventListener('beforeunload', ()=> saveProfiles(profiles));
+
+// initial small UI interactions
+calcResult.innerHTML='Enter values or use stored snapshot';
+bunkResult.innerHTML='Simulate future bunks';
+recovResult.innerHTML='Recovery calculator';
+
+// ensure month calendar updates on change
+monthSelect.addEventListener('change', ()=> { loadMonthCalendar(Number(yearSelect.value), Number(monthSelect.value)); drawChart(); });
+yearSelect.addEventListener('change', ()=> { loadMonthCalendar(Number(yearSelect.value), Number(monthSelect.value)); drawChart(); });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculate Attendance</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #ff7eb3, #ff758c);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 500px;
+        padding: 35px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        backdrop-filter: blur(12px);
+        text-align: center;
+        animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        color: white;
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        margin-top: 10px;
+        border-radius: 10px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        background: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        color: #ff4081;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(255,255,255,0.4);
+    }
+
+    .result-box {
+        margin-top: 25px;
+        color: white;
+        font-size: 1.3rem;
+        padding: 15px;
+        border-radius: 15px;
+        display: none;
+        animation: popUp 0.5s ease;
+    }
+
+    @keyframes popUp {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .safe { background: rgba(0, 255, 0, 0.3); }
+    .low { background: rgba(255, 165, 0, 0.3); }
+    .risk { background: rgba(255, 0, 0, 0.3); }
+
+    .back-btn {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 20px;
+        background: white;
+        color: #ff4081;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        transform: scale(1.1);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📊 Calculate Attendance</h1>
+
+    <input type="number" id="attended" placeholder="Enter attended classes" />
+    <input type="number" id="total" placeholder="Enter total classes" />
+
+    <button class="btn" onclick="calculate()">Calculate</button>
+
+    <div id="result" class="result-box"></div>
+
+    <a href="index.html" class="back-btn">⬅ Back to Home</a>
+</div>
+
+<script>
+function calculate() {
+    const attended = parseInt(document.getElementById("attended").value);
+    const total = parseInt(document.getElementById("total").value);
+    const resultBox = document.getElementById("result");
+
+    if (!attended || !total || attended > total) {
+        resultBox.style.display = "block";
+        resultBox.textContent = "❗ Invalid input. Check your values.";
+        resultBox.className = "result-box risk";
+        return;
+    }
+
+    const percentage = ((attended / total) * 100).toFixed(2);
+
+    let status = "";
+    if (percentage >= 75) {
+        status = "🟢 Safe — Great job! 🎉";
+        resultBox.className = "result-box safe";
+    } 
+    else if (percentage >= 60) {
+        status = "🟠 Low — Attend more classes!";
+        resultBox.className = "result-box low";
+    } 
+    else {
+        status = "🔴 Danger — You may get detained 😭";
+        resultBox.className = "result-box risk";
+    }
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `Attendance: <b>${percentage}%</b><br>${status}`;
+}
+</script>
+
+</body>
+</html>

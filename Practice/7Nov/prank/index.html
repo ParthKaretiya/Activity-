@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz for Dancer Desai</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <style>
+    html, body {
+      margin: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(-45deg, #f6d365, #fda085, #a18cd1, #fbc2eb);
+      background-size: 400% 400%;
+      animation: gradientBG 8s ease-in-out infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% {background-position:0% 50%;}
+      50% {background-position:100% 50%;}
+      100% {background-position:0% 50%;}
+    }
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(255,255,255,0.98);
+      border-radius: 34px;
+      box-shadow: 0 14px 48px rgba(160,140,209,0.22);
+      padding: 4vw 6vw;
+      text-align: center;
+      width: 95vw;
+      max-width: 400px;
+      min-width: 220px;
+      z-index: 20;
+      animation: popupShow 0.7s cubic-bezier(.39,.89,.47,1.13);
+    }
+    @keyframes popupShow {
+      0% { transform: scale(0.95) translate(-50%,-50%); opacity:0;}
+      60% { transform: scale(1.08) translate(-50%,-50%);}
+      100% { transform: scale(1) translate(-50%,-50%); opacity:1;}
+    }
+    h2 {
+      color: #a18cd1;
+      font-size: clamp(1.25rem, 4vw, 2.4rem);
+      font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+      margin-bottom: 7px;
+      letter-spacing: 2px;
+      animation: fadeInDown 1s cubic-bezier(.21,.68,.57,.86);
+      word-break: break-word;
+    }
+    @keyframes fadeInDown {
+      from { opacity:0; transform:translateY(-40px);}
+      to   { opacity:1; transform:translateY(0);}
+    }
+    .question {
+      margin: 16px 0 10px 0;
+      font-weight: bold;
+      font-size: clamp(1rem, 3vw, 1.15rem);
+      color: #7d5fff;
+      opacity:0;
+      animation: fadeIn 0.6s 0.22s forwards;
+      word-break: break-word;
+    }
+    @keyframes fadeIn {
+      from {opacity:0; transform:scale(0.92);}
+      to   {opacity:1; transform:scale(1);}
+    }
+    input[type="text"] {
+      border: 2.4px solid #a18cd1;
+      border-radius: 13px;
+      outline: none;
+      padding: clamp(10px, 3vw, 16px) clamp(8px, 6vw, 18px);
+      margin: 11px 0 18px 0;
+      width: 97%;
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      transition: border .3s, box-shadow .3s;
+      box-shadow: 0 2px 10px #fbc2eb65;
+      background: #faf2fa;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus {
+      border: 2.4px solid #fbc2eb;
+      box-shadow: 0 4px 16px #fbc2eb85;
+    }
+    .option-btn, button {
+      display: block;
+      width: 97%;
+      margin: 15px auto;
+      padding: clamp(11px, 4vw, 18px) 0;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(105deg, #fbc2eb 10%, #a18cd1 90%);
+      background-size: 200% 200%;
+      color: #fff;
+      font-weight: bold;
+      font-size: clamp(1rem, 4vw, 1.14rem);
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 2px 18px #a18cd17d, 0 0px 0 #fff0, 0 0px 0 #ffd6f7e6;
+      outline: none;
+      transition: 
+        background-position 0.4s cubic-bezier(.33,.78,.42,.98),
+        box-shadow 0.4s cubic-bezier(.33,.78,.42,.98),
+        transform 0.18s cubic-bezier(.33,.78,.42,.98);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.6s 0.16s backwards;
+      word-break: break-word;
+      touch-action: manipulation;
+    }
+    button:active, .option-btn:active {
+      background-position: left top;
+      transform: scale(0.97);
+      box-shadow: 0 2px 12px #d1b2fa;
+    }
+    button:hover, .option-btn:hover {
+      background-position: right bottom;
+      box-shadow: 0 6px 30px #f6d36585, 0 0px 0 #fff0;
+    }
+    .option-btn::after, button::after {
+      content: "";
+      position: absolute;
+      left: 20%;
+      top: -65%;
+      width: 60%;
+      height: 230%;
+      z-index: 1;
+      background: conic-gradient(from 70deg, #ffe7fa88 17%, #fff6e855 55%, #fbc2eb22 90%);
+      opacity: 0.7;
+      pointer-events: none;
+      filter: blur(7px);
+      transition: opacity 0.28s cubic-bezier(.47,.19,.63,.91);
+    }
+    .option-btn:hover::after, button:hover::after {
+      opacity: 1;
+      filter: blur(3px);
+    }
+    .option-btn:active::after, button:active::after {
+      opacity: .2;
+    }
+    @keyframes fadeInUp {
+      from {opacity:0; transform:translateY(40px);}
+      to   {opacity:1; transform:translateY(0);}
+    }
+    #result {
+      margin-top: 17px;
+      font-size: clamp(.97rem, 2vw, 1.1rem);
+      color: #ad58a2;
+      font-weight: 600;
+      min-height: 22px;
+      animation: fadeIn 0.7s 0.1s backwards;
+    }
+    .summary {
+      animation: fadeInUp 0.8s .13s backwards;
+      font-size: clamp(.92rem, 2.2vw, 1.11rem);
+      color: #7d5fff;
+      background: #f8f2fa;
+      padding: 14px 2vw 9px 2vw;
+      border-radius: 20px;
+      box-shadow: 0 2px 14px #a18cd128;
+      word-break: break-word;
+    }
+    @media (max-width:430px) {
+      #popup { padding: 10px 2vw 18px 2vw; border-radius: 12px; max-width:99vw }
+      h2 { font-size: 1.03rem; }
+      .summary { font-size: .9rem; border-radius: 8px; }
+      .option-btn, button { font-size: .96rem; padding: 9px 1vw;}
+      input[type="text"] { font-size: .93rem; padding: 8px 2vw;}
+      .question { font-size: .88rem; }
+      #result { font-size: .86rem; }
+    }
+    @media (max-height:450px) { 
+      #popup { padding: 2vw 2vw 9px 2vw; }
+      .summary { font-size: .85rem;}
+    }
+  </style>
+</head>
+<body>
+  <div id="popup">
+    <h2>Quiz for Dancer Desai</h2>
+    <div id="stepContent"></div>
+    <div id="result"></div>
+  </div>
+  <script>
+    let step = 0;
+    let answers = [];
+    let noCount = 0;
+    let parthOptionsCount = 0;
+    let parthAnswer = "";
+
+    function showStep() {
+      let sc = document.getElementById("stepContent");
+      let res = document.getElementById("result");
+      res.innerHTML = "";
+      if (step === 0) {
+        sc.innerHTML = `<div class="question">1. If you had a pet kangaroo, what would you name it?</div>
+          <input type="text" id="kangaroo" placeholder="Your answer..." />
+          <br>
+          <button onclick="nextStep()">Next</button>
+        `;
+      } else if (step === 1) {
+        answers[0] = document.getElementById("kangaroo").value;
+        sc.innerHTML = `<div class="question">2. What’s the funniest dance move you can think of?</div>
+          <input type="text" id="danceMove" placeholder="Your answer..." />
+          <br>
+          <button onclick="nextStep()">Next</button>
+        `;
+        res.innerHTML = `<span style="color:#ad58a2;">Naming your kangaroo <b>${answers[0] ? answers[0] : "No answer"}</b> is legendary! 🦘</span>`;
+      } else if (step === 2) {
+        answers[1] = document.getElementById("danceMove").value;
+        sc.innerHTML = `<div class="question">3. Can you spin in a circle right now?</div>
+          <input type="text" id="spin" placeholder="Your answer..." />
+          <br>
+          <button onclick="nextStep()">Next</button>
+        `;
+        res.innerHTML = `<span style="color:#ad58a2;">That move "<b>${answers[1] ? answers[1] : "No answer"}</b>" deserves a trophy! 🏆</span>`;
+      } else if (step === 3) {
+        answers[2] = document.getElementById("spin").value;
+        showParthOptions();
+        res.innerHTML = `<span style="color:#ad58a2;">Circle spin status: <b>${answers[2] ? answers[2] : "No answer"}</b>!</span>`;
+      } else if (step === 4) {
+        answers[3] = parthAnswer;
+        showYesNo();
+        res.innerHTML = `<span style="color:#ad58a2;">That's a wonderful thing about Parth Karetiya! 😎</span>`;
+      } else if (step === 5) {
+        let parthText = ["His name","Parth himself","All things about him"];
+        let showParthAnswer = parthText.includes(answers[3]) ? answers[3] : "No answer";
+        sc.innerHTML = `<div class="summary">
+            <strong>Your Quiz Answers:</strong><br>
+            🦘 Kangaroo Name: ${answers[0] || "No answer"}<br>
+            💃 Funniest Move: ${answers[1] || "No answer"}<br>
+            🌀 Circle Spin: ${answers[2] || "No answer"}<br>
+            🌟 Best thing about Parth Karetiya: ${showParthAnswer}<br>
+          </div>
+          <br>
+          <div class="question" style="color: #fda085; font-size:clamp(1rem,2vw,1.21rem);margin-bottom:10px;">
+            Get ready! The dance will BLOW your mind! 💃🕺
+          </div>
+          <button class="option-btn" onclick="openDanceVideo()">🎬 Watch the Wonderful Dance!</button>`;
+        res.innerHTML = ``;
+      }
+    }
+    function openDanceVideo() {
+      window.open("https://youtu.be/fxpdbdgPYAs?si=VU0UjVgiaL_0cIHn","_blank");
+    }
+    function nextStep() {
+      step++;
+      showStep();
+    }
+    function showParthOptions() {
+      let sc = document.getElementById("stepContent");
+      let funnyText = [
+        "4. What is the best thing about Parth Karetiya?",
+        "Come on, pick something nice about Parth Karetiya!",
+        "Try again! He's awesome in so many ways 😏",
+        "All the best options are above, choose one!"
+      ];
+      let questionText = funnyText[Math.min(parthOptionsCount, funnyText.length-1)];
+      sc.innerHTML = `<div class="question">${questionText}</div>
+        <button class="option-btn" onclick="pickParth('His name')">⭐ His name</button>
+        <button class="option-btn" onclick="pickParth('Parth himself')">💖 Parth himself</button>
+        <button class="option-btn" onclick="pickParth('All things about him')">🌟 All things about him</button>
+        <button class="option-btn" onclick="forceParthNothing()">🙃 Nothing</button>
+      `;
+      animateShake(sc.querySelector(".question"));
+    }
+    function pickParth(option) {
+      parthAnswer = option;
+      step = 4;
+      parthOptionsCount = 0;
+      showStep();
+    }
+    function forceParthNothing() {
+      parthOptionsCount++;
+      showParthOptions();
+    }
+    function showYesNo() {
+      let sc = document.getElementById("stepContent");
+      let funnyText = [
+        "Do you want to see a wonderful dance?",
+        "Are you sure? Honestly, you REALLY want to see this dance!",
+        "Last chance! The dance is unforgettable! See it?",
+        "You can't escape! Please say Yes!",
+        "Just click Yes! You know you're curious!",
+        "Don't fight destiny. Only Yes gets you fun!"
+      ];
+      let questionText = funnyText[Math.min(noCount, funnyText.length-1)];
+      sc.innerHTML = `
+        <div class="question animated">${questionText}</div>
+        <button class="option-btn" onclick="endQuiz(true)">🕺 Yes</button>
+        <button class="option-btn" onclick="forceNoYes()">🙅‍♀️ No</button>
+      `;
+      animateShake(sc.querySelector(".question"));
+    }
+    function animateShake(element) {
+      if (!element) return;
+      element.style.animation = 'shakeQ .7s';
+      element.addEventListener('animationend', () => {
+        element.style.animation = '';
+      });
+    }
+    function endQuiz(force) {
+      step = 5;
+      showStep();
+    }
+    function forceNoYes() {
+      noCount++;
+      showYesNo();
+    }
+    /* Extra shake animation for Yes/No question and Parth options */
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes shakeQ {
+      10%, 90% { transform: translateX(-2px);}
+      20%, 80% { transform: translateX(4px);}
+      30%, 50%, 70% { transform: translateX(-8px);}
+      40%, 60% { transform: translateX(7px);}
+    }
+    `;
+    document.head.appendChild(style);
+    showStep();
+  </script>
+</body>
+</html>
