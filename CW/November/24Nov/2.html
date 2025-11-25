@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="para">
+        Hello World
+    </div>
+
+    <div class="btn">
+        <button>Click Me</button>
+    </div>
+
+<script>
+    const btn = document.querySelector(".btn button");
+    const para = document.querySelector(".para");
+
+    let click = true ;  
+
+    btn.addEventListener('click', function () {
+
+        if (click === true) {
+            para.textContent = "You Clicked Button";
+            para.style.backgroundColor = 'red';
+            para.style.fontSize = '34px';
+            click = false;
+        } else {
+            para.textContent = "Hello World";
+            para.style.backgroundColor = 'white';
+            para.style.color = 'white';
+            para.style.fontSize = '14px';
+            click = true;
+        }
+
+    });
+</script>
+
+</body>
+</html>

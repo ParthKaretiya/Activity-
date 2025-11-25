@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="para">
+        Hello World
+    </div>
+
+    <div class="count">
+        <p>0</p>
+    </div>
+
+    <div class="btn">
+        <button>Click Me</button>
+    </div>
+
+<script>
+    const btn = document.querySelector(".btn button");
+    const count1 = document.querySelector(".count p");
+
+    let count = 0;
+
+    btn.addEventListener('click', function () {
+        count++;                      // increase value
+        count1.textContent = count;   // show the value in <p>
+    });
+</script>
+
+</body>
+</html>

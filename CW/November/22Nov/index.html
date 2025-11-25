@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Basic Form Example</title>
+  </head>
+  <style>
+    * {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+  }
+
+  .box {
+    padding: 30px 40px;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 350px;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+  }
+
+  button {
+    padding: 10px 25px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #005fcc;
+  }
+
+  #message {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  </style>
+  <body>
+    <div class="container">
+         <div class="box">
+    <h1>Basic Form</h1>
+
+   
+
+    <label for="nameInput">Name:</label>
+    <input id="nameInput" type="text" />
+        <p id="message"></p>
+
+    <br /><br />
+
+    <label for="emailInput">Email:</label>
+    <input id="emailInput" type="email" />
+        <p id="message"></p>
+
+    <br /><br />
+
+    <label for="ageInput">Age:</label>
+    <input id="ageInput" type="number" />
+        <p id="message"></p>
+
+    <br /><br />
+
+
+    
+
+    <button id="submitBtn">Submit</button>
+
+    <p id="message">
+
+    </p>
+    
+    </div>
+    </div>
+
+
+
+    <script src="index.js"></script>
+  </body>
+</html>

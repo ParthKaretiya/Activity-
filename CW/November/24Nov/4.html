@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .img1, .img2 {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="img1">
+        <img src="https://m.media-amazon.com/images/M/MV5BODk3OWIyY2MtM2E0MS00OWYyLTlkNDktMzY4MTE1MDhiYzBiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" height="200px" alt="">
+    </div>
+
+    <div class="img2">
+        <img src="https://images.news18.com/ibnlive/uploads/2025/08/haklasrkmeme-2025-08-3cb7481ad78b1e34f5762c33e69bba10-16x9.jpg?impolicy=website&width=400&height=225" height="200px" alt="">
+    </div>
+
+    <div class="btn1">
+        <button>Image 1</button>
+    </div>
+    <div class="btn2">
+        <button>Image 2</button>
+    </div>
+
+    <script>
+        const img1 = document.querySelector(".img1");
+        const img2 = document.querySelector(".img2");
+        const btn1 = document.querySelector(".btn1 button");
+        const btn2 = document.querySelector(".btn2 button");
+
+        
+        btn1.addEventListener("click", () => {
+            img1.style.display = "block";
+            img2.style.display = "none";
+        });
+
+        
+        btn2.addEventListener("click", () => {
+            img2.style.display = "block";
+            img1.style.display = "none";
+        });
+    </script>
+</body>
+</html>
