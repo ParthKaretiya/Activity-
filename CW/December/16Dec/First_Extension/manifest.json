@@ -1,0 +1,14 @@
+{
+  "name": "First Extension Example",
+  "version": "1.0.0",
+  "description": "First time I am making Extension",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "code/hello.html",
+    "default_icon": {
+      "16": "image.png",
+      "48": "image.png",
+      "128": "image.png"
+    }
+  }
+}

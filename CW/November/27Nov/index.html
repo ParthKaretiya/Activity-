@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="card" style="height: 100px; width: 200px; border: 1px solid black;">
+    In
+  </div>
+  <script>
+    var card = document.querySelector(".card");
+
+
+
+card.addEventListener("mouseover", ()=>{
+    card.style.backgroundColor = "blue";
+});
+card.addEventListener("mouseleave",()=>{
+    card.style.backgroundColor= "white"
+})
+  </script>
+</body>
+</html>

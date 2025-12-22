@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Habit Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="reminderBanner" class="reminder-banner hidden">
+    <span>⏰ Reminder: Don't forget your habits!</span>
+    <button id="closeBanner" class="close-banner">&times;</button>
+</div>
+
+<div class="app-container">
+    <aside class="sidebar">
+        <h3>Habits</h3>
+        <ul id="habitList"></ul>
+        <button id="addHabitBtn" class="btn-new">+ Add New</button>
+
+        <div class="sidebar-footer">
+            <div class="reminder-box">
+                <label for="reminderCheck" class="reminder-label">
+                    <input type="checkbox" id="reminderCheck"> Daily Reminder
+                </label>
+                <small>(Demo: 5s delay)</small>
+            </div>
+            
+            <div class="io-buttons">
+                <button id="exportBtn" class="btn-small">Export JSON</button>
+                <label for="importFile" class="btn-small btn-upload">Import JSON</label>
+                <input type="file" id="importFile" accept=".json" hidden>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-view">
+        <header>
+            <div class="header-left">
+                <h2 id="habitTitle">Select Habit</h2>
+                <div class="stats-row">
+                    <div class="streak-badge">🔥 <span id="streakCount">0</span> Streak</div>
+                    <div class="badges">
+                        <span id="badge3" class="badge" title="3 Days">🥉</span>
+                        <span id="badge7" class="badge" title="7 Days">🥈</span>
+                        <span id="badge30" class="badge" title="30 Days">🥇</span>
+                    </div>
+                </div>
+            </div>
+            <button id="deleteHabitBtn" class="btn-delete" title="Delete Habit">&times;</button>
+        </header>
+
+        <div class="calendar-controls">
+            <button id="prevBtn" class="nav-btn">&lt;</button>
+            <span id="monthDisplay">Month Year</span>
+            <button id="nextBtn" class="nav-btn">&gt;</button>
+        </div>
+
+        <div class="week-days">
+            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+        </div>
+
+        <div id="calendarGrid" class="grid"></div>
+    </main>
+</div>
+
+<div id="noteModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="modalDateTitle">Date</span>
+            <span id="closeModal" class="close">&times;</span>
+        </div>
+        <label class="check-container">
+            <input type="checkbox" id="modalCompleted"> Mark as Completed
+        </label>
+        <textarea id="modalNote" placeholder="Add a short note..."></textarea>
+        <button id="saveNoteBtn" class="btn-save">Save</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

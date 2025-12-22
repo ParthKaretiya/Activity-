@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Example</title>
+</head>
+<body>
+
+    <div class="container">
+        <button id="namebtn">Save Username</button>
+        <button id="emailbtn">Save Email</button>
+        <button id="alertbtn">Display Cookies</button>
+        <button id="delete">Delete Username</button>
+    </div>
+
+    <script>
+        var btn1 = document.getElementById("namebtn");
+        var btn2 = document.getElementById("emailbtn");
+        var btn3 = document.getElementById("alertbtn");
+        var btn4 = document.getElementById("delete");
+
+        btn1.addEventListener("click", () => {
+            document.cookie =
+              "username=Parth; expires=Thu, 16 Dec 2025 12:00:00 UTC; path=/";
+            alert("Username saved");
+        });
+
+        btn2.addEventListener("click", () => {
+            document.cookie =
+              "email=parth@gmail.com; expires=Thu, 16 Dec 2025 12:00:00 UTC; path=/";
+            alert("Email saved");
+        });
+
+        btn3.addEventListener("click", () => {
+            alert(document.cookie);
+        });
+
+        btn4.addEventListener("click", () => {
+            document.cookie =
+              "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+            alert("Username deleted");
+             document.cookie =
+              "email=parth@gmail.com; expires=Thu, 16 Dec 2022 12:00:00 UTC; path=/";
+        
+        });
+        console.log(typeof(document.cookie))
+        var data = console.log(document.cookie.split("="))
+
+        data.forEach(element => {
+           var arr = element.split("=");
+           console.log(arr[1]) ;
+        });
+    </script>
+
+</body>
+</html>

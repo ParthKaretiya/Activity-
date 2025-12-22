@@ -1,0 +1,10 @@
+{
+    "name" : "Random Jokes",
+    "version": "1.0.0",
+  "description": "First time I am making Extension",
+  "manifest_version": 3,
+  "action" : {
+    "default_popup" : "practice.html",
+    "default_icon" : "image.png"
+  }
+}

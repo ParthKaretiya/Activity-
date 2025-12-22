@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        /* Simple styling so it doesn't look ugly */
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #card {
+            width: 200px;
+            height: 200px;
+            background-color: #ddd;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="card">I am a Box</div>
+
+    <div class="controls">
+        <button id="btnColor">Change Color</button>
+        <button id="btnText">Change Text</button>
+        <button id="btnHide">Hide/Show</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

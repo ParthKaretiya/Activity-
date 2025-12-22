@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; padding: 30px; }
+        
+        #chatLog { 
+            border: 2px solid #333; 
+            height: 300px; 
+            padding: 10px; 
+            overflow-y: auto; /* Allows scrolling if many messages */
+            margin-bottom: 10px; 
+            background: #f9f9f9;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            font-size: 16px; 
+            box-sizing: border-box; /* Ensures padding doesn't break width */
+        }
+
+        /* Style for the message bubbles */
+        .msg { 
+            background: #d1ecf1; 
+            color: #0c5460;
+            padding: 8px 12px; 
+            margin-bottom: 8px; 
+            border-radius: 15px; 
+            width: fit-content;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+
+    <h3>Chat Room</h3>
+
+    <div id="chatLog"></div>
+
+    <input type="text" id="msgInput" placeholder="Type a message and hit ENTER...">
+
+    <script src="script.js"></script>
+</body>
+</html>

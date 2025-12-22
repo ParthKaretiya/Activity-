@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Facebook Photos Cards</title>
+    <style>
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .btn {
+            margin-bottom: 20px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .card p {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="btn">Load Photos</button>
+    <div class="cards"></div>
+</div>
+
+<script>
+let btn = document.querySelector(".btn");
+let cardsContainer = document.querySelector(".cards");
+
+function webLoad() {
+    fetch("https://facebook-scraper3.p.rapidapi.com/profile/photos?profile_id=100057864828042&rapidapi-key=5c764910f0msh9280d7af4347d4fp1e9bf0jsnf67589120912")
+    .then(response => response.json())
+    .then(data => {
+        cardsContainer.innerHTML = ""; // Clear previous cards
+
+        // Suppose data.photos is the array of photo URLs
+        data.photos.forEach((photo, index) => {
+            let card = document.createElement("div");
+            card.className = "card";
+
+            let img = document.createElement("img");
+            img.src = photo;
+
+            let p = document.createElement("p");
+            p.textContent = `Photo ${index + 1}`;
+
+            card.appendChild(img);
+            card.appendChild(p);
+            cardsContainer.appendChild(card);
+        });
+    })
+    .catch(error => {
+        console.error(error);
+        cardsContainer.innerHTML = "<p>Error loading photos</p>";
+    });
+}
+
+btn.addEventListener("click", webLoad);
+</script>
+
+</body>
+</html>

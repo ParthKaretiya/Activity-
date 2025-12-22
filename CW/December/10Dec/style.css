@@ -1,0 +1,16 @@
+*{
+    padding: 0;
+    margin: 0;
+
+}
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px;
+    gap: 40px
+    ;
+}
+.p{
+    width: 100%;
+}
