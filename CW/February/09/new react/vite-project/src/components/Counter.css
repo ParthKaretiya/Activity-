@@ -1,0 +1,25 @@
+.counter {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.counter h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: rgb(8, 8, 8);
+}
+
+.counter button {
+  padding: 10px 16px;
+  margin: 0 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.in{
+    background-color: green;
+    color: rgb(255, 255, 255);
+}
+.dec{
+    background-color: red;
+    color: white;
+}

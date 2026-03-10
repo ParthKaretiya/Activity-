@@ -1,0 +1,70 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.Timer {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 300px;
+}
+
+.Timer h1 {
+  font-size: 48px;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 8px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s ease;
+}
+
+/* Start Button */
+.inc {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.inc:hover {
+  background-color: #45a049;
+}
+
+/* Stop Button */
+.dec {
+  background-color: #f44336;
+  color: white;
+}
+
+.dec:hover {
+  background-color: #d32f2f;
+}
+
+/* Reset Button */
+.res {
+  background-color: #2196F3;
+  color: white;
+}
+
+.res:hover {
+  background-color: #1976d2;
+}
+
+button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}

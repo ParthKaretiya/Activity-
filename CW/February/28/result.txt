@@ -1,0 +1,8 @@
+Addition: 80
+Multiplication: 1500
+Subtraction: 8
+Division: 5
+Addition: 80
+Multiplication: 1500
+Subtraction: 8
+Division: 5
