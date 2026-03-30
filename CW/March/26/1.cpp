@@ -58,7 +58,7 @@ int main(){
     obj.engineInfo();
     obj.brakeInfo();
 
-    //object of hondaaa aaaa
+    //object of honda
     
     Honda obj1;
     obj1.engineInfo();
