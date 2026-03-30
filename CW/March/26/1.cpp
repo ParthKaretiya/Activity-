@@ -45,7 +45,7 @@ class Honda: public Car{
       }
       
       void brakeInfo(){
-          cout << "Brake is available for front and back plus Automatic object detaction brake "<<endl;
+          cout << "Borake is available for front and back plus Automatic object detaction brake "<<endl;
       }
     
 };
