@@ -10,7 +10,8 @@ int main() {
         num = num + to_string(arr[i]);  
     }
     res = stoi(num)+1;
-    // res = res + 1;
+    // res = res + 1;cc 
+    // ff
     
    
 
