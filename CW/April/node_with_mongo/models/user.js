@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({}, { strict: false });
 
-// Easy 
+// Easy file structure 
 
 const User = mongoose.model('user' , userSchema)
 
