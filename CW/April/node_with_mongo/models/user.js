@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     age: { type: Number },
     role: { type: String, default: 'user' },
     isActive: { type: Boolean, default: true }
-}, { strict: false });
+}, { timestamps: true, strict: false });
 
 // Easy file structure to understand MVC architecture
 
