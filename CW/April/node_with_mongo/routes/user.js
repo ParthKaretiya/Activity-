@@ -1,3 +1,7 @@
+/**
+ * User Router
+ * Handles all REST endpoints for user resources in MVC architecture.
+ */
 const express = require('express');
 const router = express.Router();
 
