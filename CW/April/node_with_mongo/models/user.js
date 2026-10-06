@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
 
 
-const userSchema = new mongoose.Schema({}, { strict: false });
+const userSchema = new mongoose.Schema({
+    name: { type: String, required: true }
+}, { strict: false });
 
 // Easy file structure to understand MVC architecture
 
