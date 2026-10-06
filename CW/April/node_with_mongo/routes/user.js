@@ -70,6 +70,19 @@ router.put('/user/:id', async (req, res) => {
     }
 });
 
+// PATCH partial update user by ID
+router.patch('/user/:id', async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        if (!updatedUser) {
+            return res.status(404).send("User not found");
+        }
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 // DELETE remove user by ID
 router.delete('/user/:id', async (req, res) => {
     try {
