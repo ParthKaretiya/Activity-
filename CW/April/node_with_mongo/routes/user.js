@@ -33,6 +33,19 @@ router.get('/user/count', async (req, res) => {
     }
 });
 
+// Bulk create users
+router.post('/user/bulk', async (req, res) => {
+    try {
+        if (!Array.isArray(req.body) || req.body.length === 0) {
+            return handleError(res, 400, "Array of users is required");
+        }
+        const createdUsers = await User.insertMany(req.body);
+        res.status(201).json({ success: true, count: createdUsers.length, users: createdUsers });
+    } catch (err) {
+        handleError(res, 500, err.message);
+    }
+});
+
 // GET users with pagination, search, sorting, and field selection
 router.get('/user', async (req, res) => {
     try {
