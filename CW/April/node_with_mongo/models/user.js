@@ -17,6 +17,11 @@ userSchema.pre('save', function (next) {
     next();
 });
 
+// Instance method to get user summary
+userSchema.methods.getSummary = function () {
+    return `${this.name} (${this.email})`;
+};
+
 // Easy file structure to understand MVC architecture
 
 const User = mongoose.model('user' , userSchema)
