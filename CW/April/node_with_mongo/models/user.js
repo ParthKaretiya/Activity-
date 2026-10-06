@@ -1,3 +1,7 @@
+/**
+ * User Model
+ * Defines Mongoose schema and methods for User entity in MVC architecture.
+ */
 const mongoose = require('mongoose')
 
 
