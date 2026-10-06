@@ -44,6 +44,19 @@ router.post('/user', async (req, res) => {
     }
 });
 
+// PUT update user by ID
+router.put('/user/:id', async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedUser) {
+            return res.status(404).send("User not found");
+        }
+        res.json(updatedUser);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 // Test route
 router.get('/', (req, res) => {
     res.send("Hello");
