@@ -12,6 +12,12 @@ const handleError = (res, status, message) => {
     return res.status(status).json({ success: false, error: message });
 };
 
+// Route-level request logger
+router.use((req, res, next) => {
+    console.log(`[Users Route] ${req.method} ${req.originalUrl || req.url}`);
+    next();
+});
+
 // GET users with pagination, search, sorting, and field selection
 router.get('/user', async (req, res) => {
     try {
