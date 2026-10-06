@@ -18,6 +18,11 @@ router.use((req, res, next) => {
     next();
 });
 
+// Health check endpoint
+router.get('/health', (req, res) => {
+    res.json({ status: 'ok', router: 'users', timestamp: new Date().toISOString() });
+});
+
 // GET users with pagination, search, sorting, and field selection
 router.get('/user', async (req, res) => {
     try {
