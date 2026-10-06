@@ -1,13 +1,13 @@
 const express = require('express');
-const router = express.Router(); // ✅ fix
+const router = express.Router();
 
-const User = require('./models/User'); // make sure this is imported
+const User = require('../models/user');
 
 // GET all users (only names)
 router.get('/user', async (req, res) => {
     try {
         const users = await User.find();
-        const users1 = users.map((n) => n.name); // ❌ no await needed
+        const users1 = users.map((n) => n.name);
         res.json(users1);
     } catch (err) {
         res.status(500).send(err.message);
@@ -17,7 +17,7 @@ router.get('/user', async (req, res) => {
 // GET user by ID
 router.get('/user/:id', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id); // ✅ correct way
+        const user = await User.findById(req.params.id);
 
         if (!user) {
             return res.status(404).send("User not found");
