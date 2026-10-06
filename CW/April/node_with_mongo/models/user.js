@@ -7,7 +7,12 @@ const userSchema = new mongoose.Schema({
     age: { type: Number },
     role: { type: String, default: 'user' },
     isActive: { type: Boolean, default: true }
-}, { timestamps: true, strict: false });
+}, { 
+    timestamps: true, 
+    strict: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
 
 // Indexing for faster email queries
 userSchema.index({ email: 1 });
