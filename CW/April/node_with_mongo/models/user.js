@@ -22,6 +22,11 @@ userSchema.methods.getSummary = function () {
     return `${this.name} (${this.email})`;
 };
 
+// Static method to find active users
+userSchema.statics.findActiveUsers = function () {
+    return this.find({ isActive: true });
+};
+
 // Easy file structure to understand MVC architecture
 
 const User = mongoose.model('user' , userSchema)
