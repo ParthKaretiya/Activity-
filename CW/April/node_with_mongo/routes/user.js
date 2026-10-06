@@ -46,6 +46,21 @@ router.post('/user/bulk', async (req, res) => {
     }
 });
 
+// Toggle user active status
+router.patch('/user/:id/toggle-status', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return handleError(res, 404, "User not found");
+        }
+        user.isActive = !user.isActive;
+        await user.save();
+        res.json({ success: true, message: "Status updated", isActive: user.isActive });
+    } catch (err) {
+        handleError(res, 500, err.message);
+    }
+});
+
 // GET users with pagination, search, sorting, and field selection
 router.get('/user', async (req, res) => {
     try {
