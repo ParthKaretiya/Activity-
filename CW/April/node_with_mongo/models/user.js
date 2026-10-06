@@ -41,5 +41,5 @@ userSchema.virtual('displayName').get(function () {
 
 const User = mongoose.model('user' , userSchema)
 
-
+// Export User model for controller usage
 module.exports = User ;
