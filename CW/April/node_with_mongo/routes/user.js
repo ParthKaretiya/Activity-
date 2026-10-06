@@ -1,6 +1,8 @@
 /**
  * User Router
- * Handles all REST endpoints for user resources in MVC architecture.
+ * Architecture: MVC (Model-View-Controller)
+ * Description: Handles RESTful endpoints for the User entity including CRUD operations,
+ *              pagination, search filtering, status toggling, and validation.
  */
 const express = require('express');
 const router = express.Router({ caseSensitive: false, strict: false });
