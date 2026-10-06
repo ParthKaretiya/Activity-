@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true }
 }, { timestamps: true, strict: false });
 
+// Indexing for faster email queries
+userSchema.index({ email: 1 });
+
 // Easy file structure to understand MVC architecture
 
 const User = mongoose.model('user' , userSchema)
