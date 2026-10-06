@@ -7,12 +7,15 @@ const router = express.Router();
 
 const User = require('../models/user');
 
-// GET all users (only names)
+// GET users with pagination support
 router.get('/user', async (req, res) => {
     try {
-        const users = await User.find();
-        const users1 = users.map((n) => n.name);
-        res.json(users1);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const users = await User.find().skip(skip).limit(limit);
+        res.json({ page, limit, users });
     } catch (err) {
         res.status(500).send(err.message);
     }
