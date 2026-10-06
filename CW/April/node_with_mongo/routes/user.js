@@ -21,6 +21,14 @@ const handleError = (res, status, message) => {
     return res.status(status).json({ success: false, error: message });
 };
 
+// Validate Mongo ObjectId length middleware
+const validateId = (req, res, next) => {
+    if (req.params.id && req.params.id.length !== 24) {
+        return handleError(res, HTTP.BAD_REQUEST, "Invalid User ID format");
+    }
+    next();
+};
+
 // Route-level request logger
 router.use((req, res, next) => {
     console.log(`[Users Route] ${req.method} ${req.originalUrl || req.url}`);
@@ -56,7 +64,7 @@ router.post('/user/bulk', async (req, res) => {
 });
 
 // Toggle user active status
-router.patch('/user/:id/toggle-status', async (req, res) => {
+router.patch('/user/:id/toggle-status', validateId, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -92,7 +100,7 @@ router.get('/user', async (req, res) => {
 });
 
 // GET user by ID
-router.get('/user/:id', async (req, res) => {
+router.get('/user/:id', validateId, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
 
@@ -121,7 +129,7 @@ router.post('/user', async (req, res) => {
 });
 
 // PUT update user by ID
-router.put('/user/:id', async (req, res) => {
+router.put('/user/:id', validateId, async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedUser) {
@@ -134,7 +142,7 @@ router.put('/user/:id', async (req, res) => {
 });
 
 // PATCH partial update user by ID
-router.patch('/user/:id', async (req, res) => {
+router.patch('/user/:id', validateId, async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         if (!updatedUser) {
@@ -147,7 +155,7 @@ router.patch('/user/:id', async (req, res) => {
 });
 
 // DELETE remove user by ID
-router.delete('/user/:id', async (req, res) => {
+router.delete('/user/:id', validateId, async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) {
