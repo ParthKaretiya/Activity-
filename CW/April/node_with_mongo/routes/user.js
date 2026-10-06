@@ -23,6 +23,16 @@ router.get('/health', (req, res) => {
     res.json({ status: 'ok', router: 'users', timestamp: new Date().toISOString() });
 });
 
+// Total count endpoint
+router.get('/user/count', async (req, res) => {
+    try {
+        const count = await User.countDocuments();
+        res.json({ success: true, count });
+    } catch (err) {
+        handleError(res, 500, err.message);
+    }
+});
+
 // GET users with pagination, search, sorting, and field selection
 router.get('/user', async (req, res) => {
     try {
