@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({}, { strict: false });
 
-// Easy file structure to understand MVC
+// Easy file structure to understand MVC architecture
 
 const User = mongoose.model('user' , userSchema)
 
