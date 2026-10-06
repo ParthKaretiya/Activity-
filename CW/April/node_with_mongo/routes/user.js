@@ -7,6 +7,15 @@ const router = express.Router();
 
 const User = require('../models/user');
 
+// HTTP Status Codes
+const HTTP = {
+    OK: 200,
+    CREATED: 201,
+    BAD_REQUEST: 400,
+    NOT_FOUND: 404,
+    INTERNAL_SERVER_ERROR: 500
+};
+
 // Centralized error response helper
 const handleError = (res, status, message) => {
     return res.status(status).json({ success: false, error: message });
@@ -29,7 +38,7 @@ router.get('/user/count', async (req, res) => {
         const count = await User.countDocuments();
         res.json({ success: true, count });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -37,12 +46,12 @@ router.get('/user/count', async (req, res) => {
 router.post('/user/bulk', async (req, res) => {
     try {
         if (!Array.isArray(req.body) || req.body.length === 0) {
-            return handleError(res, 400, "Array of users is required");
+            return handleError(res, HTTP.BAD_REQUEST, "Array of users is required");
         }
         const createdUsers = await User.insertMany(req.body);
-        res.status(201).json({ success: true, count: createdUsers.length, users: createdUsers });
+        res.status(HTTP.CREATED).json({ success: true, count: createdUsers.length, users: createdUsers });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -51,13 +60,13 @@ router.patch('/user/:id/toggle-status', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return handleError(res, 404, "User not found");
+            return handleError(res, HTTP.NOT_FOUND, "User not found");
         }
         user.isActive = !user.isActive;
         await user.save();
         res.json({ success: true, message: "Status updated", isActive: user.isActive });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -78,7 +87,7 @@ router.get('/user', async (req, res) => {
         const users = await User.find(query).select(projection).sort({ [sortBy]: sortOrder }).skip(skip).limit(limit);
         res.json({ success: true, page, limit, users });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -88,12 +97,12 @@ router.get('/user/:id', async (req, res) => {
         const user = await User.findById(req.params.id);
 
         if (!user) {
-            return handleError(res, 404, "User not found");
+            return handleError(res, HTTP.NOT_FOUND, "User not found");
         }
 
         res.json({ success: true, user });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -101,13 +110,13 @@ router.get('/user/:id', async (req, res) => {
 router.post('/user', async (req, res) => {
     try {
         if (!req.body.name) {
-            return handleError(res, 400, "Name is required");
+            return handleError(res, HTTP.BAD_REQUEST, "Name is required");
         }
         const newUser = new User(req.body);
         await newUser.save();
-        res.status(201).json({ success: true, user: newUser });
+        res.status(HTTP.CREATED).json({ success: true, user: newUser });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -116,11 +125,11 @@ router.put('/user/:id', async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedUser) {
-            return handleError(res, 404, "User not found");
+            return handleError(res, HTTP.NOT_FOUND, "User not found");
         }
         res.json({ success: true, user: updatedUser });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -129,11 +138,11 @@ router.patch('/user/:id', async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         if (!updatedUser) {
-            return handleError(res, 404, "User not found");
+            return handleError(res, HTTP.NOT_FOUND, "User not found");
         }
         res.json({ success: true, user: updatedUser });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
@@ -142,11 +151,11 @@ router.delete('/user/:id', async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) {
-            return handleError(res, 404, "User not found");
+            return handleError(res, HTTP.NOT_FOUND, "User not found");
         }
         res.json({ success: true, message: "User deleted successfully", user: deletedUser });
     } catch (err) {
-        handleError(res, 500, err.message);
+        handleError(res, HTTP.INTERNAL_SERVER_ERROR, err.message);
     }
 });
 
