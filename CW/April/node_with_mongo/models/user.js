@@ -27,6 +27,11 @@ userSchema.statics.findActiveUsers = function () {
     return this.find({ isActive: true });
 };
 
+// Virtual property for display name
+userSchema.virtual('displayName').get(function () {
+    return this.name || 'Anonymous';
+});
+
 // Easy file structure to understand MVC architecture
 
 const User = mongoose.model('user' , userSchema)
