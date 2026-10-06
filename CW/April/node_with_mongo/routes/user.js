@@ -3,7 +3,7 @@
  * Handles all REST endpoints for user resources in MVC architecture.
  */
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ caseSensitive: false, strict: false });
 
 const User = require('../models/user');
 
