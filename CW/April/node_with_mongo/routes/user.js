@@ -7,14 +7,19 @@ const router = express.Router();
 
 const User = require('../models/user');
 
-// GET users with pagination support
+// GET users with pagination and search filter
 router.get('/user', async (req, res) => {
     try {
+        const { search, role } = req.query;
+        const query = {};
+        if (search) query.name = { $regex: search, $options: 'i' };
+        if (role) query.role = role;
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const users = await User.find().skip(skip).limit(limit);
+        const users = await User.find(query).skip(skip).limit(limit);
         res.json({ page, limit, users });
     } catch (err) {
         res.status(500).send(err.message);
