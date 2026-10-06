@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
 // Indexing for faster email queries
 userSchema.index({ email: 1 });
 
+// Pre-save middleware hook
+userSchema.pre('save', function (next) {
+    next();
+});
+
 // Easy file structure to understand MVC architecture
 
 const User = mongoose.model('user' , userSchema)
