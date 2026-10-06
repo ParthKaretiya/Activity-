@@ -57,6 +57,19 @@ router.put('/user/:id', async (req, res) => {
     }
 });
 
+// DELETE remove user by ID
+router.delete('/user/:id', async (req, res) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+        if (!deletedUser) {
+            return res.status(404).send("User not found");
+        }
+        res.json({ message: "User deleted successfully", user: deletedUser });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 // Test route
 router.get('/', (req, res) => {
     res.send("Hello");
