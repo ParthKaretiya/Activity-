@@ -52,8 +52,22 @@ const createUser = async (req, res) => {
     }
 };
 
+// PUT update user by ID
+const updateUser = async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+        res.json({ success: true, user: updatedUser });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
-    createUser
+    createUser,
+    updateUser
 };
