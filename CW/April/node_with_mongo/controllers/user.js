@@ -14,6 +14,19 @@ const getUserCount = async (req, res) => {
     }
 };
 
+// Bulk create users
+const bulkCreateUsers = async (req, res) => {
+    try {
+        if (!Array.isArray(req.body) || req.body.length === 0) {
+            return res.status(400).json({ success: false, error: "Array of users is required" });
+        }
+        const createdUsers = await User.insertMany(req.body);
+        res.status(201).json({ success: true, count: createdUsers.length, users: createdUsers });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
 // GET all users with filtering, sorting, and pagination
 const getAllUsers = async (req, res) => {
     try {
@@ -118,6 +131,7 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
     getUserCount,
+    bulkCreateUsers,
     getAllUsers,
     getUserById,
     createUser,
