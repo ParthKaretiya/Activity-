@@ -38,7 +38,22 @@ const getUserById = async (req, res) => {
     }
 };
 
+// POST create user with validation
+const createUser = async (req, res) => {
+    try {
+        if (!req.body.name) {
+            return res.status(400).json({ success: false, error: "Name is required" });
+        }
+        const newUser = new User(req.body);
+        await newUser.save();
+        res.status(201).json({ success: true, user: newUser });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
 module.exports = {
     getAllUsers,
-    getUserById
+    getUserById,
+    createUser
 };
