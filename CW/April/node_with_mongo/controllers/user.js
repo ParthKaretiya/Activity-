@@ -1,6 +1,8 @@
 /**
  * User Controller
- * Handles business logic for user-related requests in MVC architecture.
+ * Architecture: MVC (Model-View-Controller)
+ * Layer: Controller
+ * Purpose: Encapsulates business logic, data validation, and database operations for User resource.
  */
 const User = require('../models/user');
 
