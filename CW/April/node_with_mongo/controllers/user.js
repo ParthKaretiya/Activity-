@@ -4,6 +4,16 @@
  */
 const User = require('../models/user');
 
+// GET total user count
+const getUserCount = async (req, res) => {
+    try {
+        const count = await User.countDocuments();
+        res.json({ success: true, count });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
 // GET all users with filtering, sorting, and pagination
 const getAllUsers = async (req, res) => {
     try {
@@ -107,6 +117,7 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
+    getUserCount,
     getAllUsers,
     getUserById,
     createUser,
