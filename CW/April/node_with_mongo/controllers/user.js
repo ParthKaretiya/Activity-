@@ -9,6 +9,14 @@ const sendError = (res, status, message) => {
     return res.status(status).json({ success: false, error: message });
 };
 
+// Query sanitizer for safe filtering
+const sanitizeQuery = (params) => {
+    const clean = {};
+    if (params.search) clean.name = { $regex: String(params.search).trim(), $options: 'i' };
+    if (params.role) clean.role = String(params.role).trim();
+    return clean;
+};
+
 // GET total user count
 const getUserCount = async (req, res) => {
     try {
@@ -35,10 +43,8 @@ const bulkCreateUsers = async (req, res) => {
 // GET all users with filtering, sorting, and pagination
 const getAllUsers = async (req, res) => {
     try {
-        const { search, role, sortBy = 'createdAt', order = 'desc', fields } = req.query;
-        const query = {};
-        if (search) query.name = { $regex: search, $options: 'i' };
-        if (role) query.role = role;
+        const { sortBy = 'createdAt', order = 'desc', fields } = req.query;
+        const query = sanitizeQuery(req.query);
 
         const sortOrder = order === 'asc' ? 1 : -1;
         const projection = fields ? fields.split(',').join(' ') : '';
