@@ -65,6 +65,19 @@ const updateUser = async (req, res) => {
     }
 };
 
+// PATCH partial update user by ID
+const patchUser = async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+        res.json({ success: true, user: updatedUser });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
 // DELETE remove user by ID
 const deleteUser = async (req, res) => {
     try {
@@ -83,5 +96,6 @@ module.exports = {
     getUserById,
     createUser,
     updateUser,
+    patchUser,
     deleteUser
 };
