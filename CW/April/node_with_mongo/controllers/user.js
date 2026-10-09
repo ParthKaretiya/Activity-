@@ -4,13 +4,18 @@
  */
 const User = require('../models/user');
 
+// Centralized error response utility
+const sendError = (res, status, message) => {
+    return res.status(status).json({ success: false, error: message });
+};
+
 // GET total user count
 const getUserCount = async (req, res) => {
     try {
         const count = await User.countDocuments();
         res.json({ success: true, count });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -18,12 +23,12 @@ const getUserCount = async (req, res) => {
 const bulkCreateUsers = async (req, res) => {
     try {
         if (!Array.isArray(req.body) || req.body.length === 0) {
-            return res.status(400).json({ success: false, error: "Array of users is required" });
+            return sendError(res, 400, "Array of users is required");
         }
         const createdUsers = await User.insertMany(req.body);
         res.status(201).json({ success: true, count: createdUsers.length, users: createdUsers });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -44,7 +49,7 @@ const getAllUsers = async (req, res) => {
         const users = await User.find(query).select(projection).sort({ [sortBy]: sortOrder }).skip(skip).limit(limit);
         res.json({ success: true, page, limit, users });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -53,11 +58,11 @@ const getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ success: false, error: "User not found" });
+            return sendError(res, 404, "User not found");
         }
         res.json({ success: true, user });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -65,13 +70,13 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res) => {
     try {
         if (!req.body.name) {
-            return res.status(400).json({ success: false, error: "Name is required" });
+            return sendError(res, 400, "Name is required");
         }
         const newUser = new User(req.body);
         await newUser.save();
         res.status(201).json({ success: true, user: newUser });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -80,11 +85,11 @@ const updateUser = async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedUser) {
-            return res.status(404).json({ success: false, error: "User not found" });
+            return sendError(res, 404, "User not found");
         }
         res.json({ success: true, user: updatedUser });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -93,11 +98,11 @@ const patchUser = async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         if (!updatedUser) {
-            return res.status(404).json({ success: false, error: "User not found" });
+            return sendError(res, 404, "User not found");
         }
         res.json({ success: true, user: updatedUser });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -106,13 +111,13 @@ const toggleUserStatus = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ success: false, error: "User not found" });
+            return sendError(res, 404, "User not found");
         }
         user.isActive = !user.isActive;
         await user.save();
         res.json({ success: true, message: "Status updated", isActive: user.isActive });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
@@ -121,11 +126,11 @@ const deleteUser = async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) {
-            return res.status(404).json({ success: false, error: "User not found" });
+            return sendError(res, 404, "User not found");
         }
         res.json({ success: true, message: "User deleted successfully", user: deletedUser });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        sendError(res, 500, err.message);
     }
 };
 
