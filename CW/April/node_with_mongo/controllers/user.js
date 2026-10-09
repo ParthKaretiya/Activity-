@@ -140,7 +140,8 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = {
+// Export Controller action bundle
+const userController = {
     getUserCount,
     bulkCreateUsers,
     getAllUsers,
@@ -151,3 +152,5 @@ module.exports = {
     toggleUserStatus,
     deleteUser
 };
+
+module.exports = userController;
